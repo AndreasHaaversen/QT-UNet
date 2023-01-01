@@ -1,0 +1,6 @@
+depths: [2, 2, 2, 1]
+decoder_depths: [1, 2, 2, 2]
+num_heads: [3, 6, 12, 24]
+patch_size: [4, 4, 4]
+window_size: 7
+mlp_ratio: 4.0

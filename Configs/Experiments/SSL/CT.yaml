@@ -1,0 +1,17 @@
+experiment: "CT"
+
+model: !include Models/QT-UNet/Base.yaml
+
+data:
+  batch_size: 32
+  num_workers: 6
+
+trainer:
+  max_epochs: 150
+  accumulate_grad_batches: 2
+
+# Not used
+metrics:
+  include_background: True
+  list:
+    - "Dice"

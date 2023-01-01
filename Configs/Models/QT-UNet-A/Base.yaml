@@ -1,0 +1,11 @@
+type: "QT-UNet-A"
+variant: "Base"
+drop_path_rate: 0.2
+pretrained_checkpoint: "./pretrained_ckpt/swin_tiny_patch4_window7_224.pth"
+embed_dim: 96
+
+optimizer: "Adam"
+learning_rate: 0.0004
+weight_decay: 0
+
+common: !include Models/QT-UNet-A/Common.yaml

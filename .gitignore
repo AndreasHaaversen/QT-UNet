@@ -1,0 +1,13 @@
+.vscode/
+
+# Python specifics
+__pycache__/
+venv/
+
+lightning_logs/
+tb_logs/
+
+pretrained_ckpt/
+checkpoints/
+
+Predictions/

@@ -1,0 +1,19 @@
+experiment: "MSD"
+
+model: !include Models/QT-UNet/Tiny.yaml
+model_extra:
+  exclusive_targets: True
+
+data:
+  batch_size: 32
+  num_workers: 6
+  task: "Task02"
+
+trainer:
+  max_epochs: 350
+  accumulate_grad_batches: 2
+
+metrics:
+  list:
+    - "Dice"
+  include_background: True

@@ -1,0 +1,11 @@
+type: "VT-UNet-A"
+variant: "Small"
+drop_path_rate: 0.2
+pretrained_checkpoint: "./pretrained_ckpt/swin_tiny_patch4_window7_224.pth"
+embed_dim: 72
+
+optimizer: "Adam"
+learning_rate: 0.0004
+weight_decay: 0
+
+common: !include Models/VT-UNet-A/Common.yaml

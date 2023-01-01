@@ -1,0 +1,16 @@
+experiment: "BraTS"
+
+model: !include Models/VT-UNet-A/Tiny.yaml
+
+data:
+  batch_size: 1
+  num_workers: 6
+
+trainer:
+  max_epochs: 350
+
+metrics:
+  include_background: True
+  list:
+    - "Dice"
+    - "HD"
