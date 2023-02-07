@@ -1,4 +1,4 @@
-# VT-UNet
+# QT-UNet
 
 Getting started requires [Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to be installed, and you need to be on a Linux distro. Once available from the command line, simply run the following command from the root of the project:
 
