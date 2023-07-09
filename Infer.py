@@ -72,40 +72,41 @@ def run_inference(
         )
 
     for data_sample in predictions_list:
-        images = data_sample["image"]
         data_sample["image"] = data_sample["pred"]
         if selected_experiment in ["MSD", "BTCV", "BraTS"]:
             data_sample = batch_inverter(data_sample)[0]
 
-        preds = data_sample["image"]
-        names = (
-            data_sample["name"]
-            if "name" in data_sample
-            else ["*" for _ in range(len(preds))]
-        )
-        for image, pred, name in zip(images, preds, names):
-            if selected_experiment == "BraTS":
-                ET = pred[0].bool()
-                NET = torch.logical_and(pred[1], torch.logical_not(ET))
-                ED = torch.logical_and(pred[2], torch.logical_not(pred[1]))
+        pred = data_sample["image"]
+        name = data_sample["name"]
+        if selected_experiment == "BraTS" or (
+            selected_experiment == "MSD" and "Task01" in task
+        ):
+            ET = pred[0].bool()
+            NET = torch.logical_and(pred[1], torch.logical_not(ET))
+            ED = torch.logical_and(pred[2], torch.logical_not(pred[1]))
 
-                pred = torch.zeros(pred.shape[1:], device=pred.device)
-                pred[ET] = 4
-                pred[NET] = 1
-                pred[ED] = 2
-            else:
-                pred = torch.argmax(pred, dim=0)
+            pred = torch.zeros(pred.shape[1:], device=pred.device)
+            pred[ET] = 4
+            pred[NET] = 1
+            pred[ED] = 2
+        else:
+            pred = np.argmax(pred, axis=0)
 
-            if selected_experiment == "BraTS":
-                pred_img = sitk.GetImageFromArray(
-                    pred.cpu().numpy().astype(np.uint8).swapaxes(0, -1)
-                )
-                ref_path = data_sample["image_meta_dict"]["filename_or_obj"]
-                ref_img = sitk.ReadImage(ref_path)
+        if selected_experiment == "BraTS":
+            pred = sitk.GetImageFromArray(
+                pred.cpu().numpy().astype(np.uint8).swapaxes(0, -1)
+            )
+        else:
+            pred = sitk.GetImageFromArray(pred.astype(np.uint8).swapaxes(0, -1))
 
-                pred_img.CopyInformation(ref_img)
-            if selected_experiment in ["MSD", "BTCV", "BraTS"]:
-                sitk.WriteImage(pred_img, f"{dir_name}/{name}")
+        ref_path = data_sample["image_meta_dict"]["filename_or_obj"]
+        ref_img = sitk.ReadImage(ref_path)
+        pred.CopyInformation(ref_img)
+
+        if selected_experiment in ["MSD", "BTCV", "BraTS"]:
+            filename = f"{dir_name}/{name}"
+            print(filename)
+            sitk.WriteImage(pred, filename)
 
     zip_name = f"{selected_model}-{selected_experiment}"
     zip_path = os.path.join(dir_name, "..", zip_name)

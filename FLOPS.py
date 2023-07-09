@@ -5,7 +5,6 @@ import torch
 import yaml
 from Data.BTCV import BTCVDataModule
 from Data.Brats import BratsDataModule
-from Data.CityScapes import CustomCityScapesDataModule
 from Data.MSD import MSDDataModule
 from Models import get_model
 from fvcore.nn import FlopCountAnalysis
@@ -96,6 +95,5 @@ if __name__ == "__main__":
                 report += f"{model_config.type}-{model_config.variant} in {dm.__class__.__name__} {task_no}: {flop_count.total():,}\n"
 
         report += "\n"
-
 
     print(report)

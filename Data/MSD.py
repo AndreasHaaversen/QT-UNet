@@ -21,6 +21,7 @@ from .MSD_utils import (
     TASK_TO_ROI_SIZE,
     TASK_TO_TRANSFORM_MAP,
     TASK_TO_VAL_TRANSFORM_MAP,
+    TASK_TO_TEST_TRANSFORM,
     TASKS_WITH_POS_NEG_SAMPLING,
 )
 
@@ -105,6 +106,19 @@ class MSDDataModule(LightningDataModule):
             ]
         )
 
+        self.predict_transform = Compose(
+            [
+                LoadImaged(keys=["image"]),
+                EnsureChannelFirstd(keys=["image"]),
+                Orientationd(
+                    keys=["image"],
+                    axcodes="RAS",
+                ),
+                *TASK_TO_TEST_TRANSFORM[task],
+                EnsureTyped(keys=["image"]),
+            ]
+        )
+
     def setup(self, stage: Optional[str] = None):
         if stage == "fit" or stage is None:
             # Assign train/val datasets for use in dataloaders
@@ -134,6 +148,15 @@ class MSDDataModule(LightningDataModule):
                 num_workers=self.num_workers,
                 cache_num=0,
             )
+        if stage == "predict" or stage is None:
+            self.msd_pred = DecathlonDataset(
+                self.data_dir,
+                self.task,
+                "test",
+                self.predict_transform,
+                num_workers=self.num_workers,
+                cache_num=0,
+            )
 
     def train_dataloader(self):
         return DataLoader(
@@ -160,7 +183,18 @@ class MSDDataModule(LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(
-            self.msd_test,
+            self.msd_pred,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.num_workers,
+            drop_last=self.drop_last,
+            pin_memory=self.pin_memory,
+            persistent_workers=self.persistent_workers,
+        )
+
+    def predict_dataloader(self):
+        return DataLoader(
+            self.msd_pred,
             batch_size=self.batch_size,
             shuffle=False,
             num_workers=self.num_workers,

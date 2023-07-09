@@ -11,9 +11,9 @@ class BratsDataset(Dataset):
         self.split = split
 
         self.datas = []
-        self.patterns = ["_t1", "_t1ce", "_t2", "_flair"]
+        self.patterns = ["-t1n", "-t1c", "-t2w", "-t2f"]
         if self.split != "predict":
-            self.patterns.append("_seg")
+            self.patterns.append("-seg")
 
         base_folder = pathlib.Path(base_path).joinpath(split).resolve()
         print(base_folder)
@@ -25,7 +25,11 @@ class BratsDataset(Dataset):
                 patient_dir / f"{patient_id}{value}.nii.gz" for value in self.patterns
             ]
             patient = dict(
-                id=patient_id, t1=paths[0], t1ce=paths[1], t2=paths[2], flair=paths[3],
+                id=patient_id,
+                t1=paths[0],
+                t1ce=paths[1],
+                t2=paths[2],
+                flair=paths[3],
             )
             if self.split != "predict":
                 patient["seg"] = paths[4]

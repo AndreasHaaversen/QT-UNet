@@ -53,6 +53,86 @@ TASKS_WITH_POS_NEG_SAMPLING = [
     "Task10",
 ]
 
+TASK_TO_TEST_TRANSFORM = {
+    "Task01": [
+        Spacingd(
+            keys=["image"],
+            pixdim=(1.0, 1.0, 1.0),
+            mode=("bilinear"),
+        ),
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+    ],
+    "Task02": [
+        Spacingd(
+            keys=["image"],
+            pixdim=(1.0, 1.0, 1.0),
+            mode=("bilinear"),
+        ),
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+    ],
+    "Task03": [
+        Spacingd(
+            keys=["image"],
+            pixdim=(1.0, 1.0, 1.0),
+            mode=("bilinear"),
+        ),
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        ScaleIntensityd(keys="image", minv=-21, maxv=189),
+        NormalizeIntensityd(keys="image", nonzero=True),
+    ],
+    "Task04": [
+        Spacingd(
+            keys=["image"],
+            pixdim=(0.2, 0.2, 0.2),
+            mode=("bilinear"),
+        ),
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+    ],
+    "Task05": [
+        Spacingd(
+            keys=["image"],
+            pixdim=(0.5, 0.5, 0.5),
+            mode=("bilinear"),
+        ),
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+    ],
+    "Task06": [
+        Spacingd(
+            keys=["image"],
+            pixdim=(1.0, 1.0, 1.0),
+            mode=("bilinear"),
+        ),
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        Clipd(keys="image", minv=-1000, maxv=1000),
+        NormalizeIntensityd(keys="image", nonzero=True),
+    ],
+    "Task07": [
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        Clipd(keys="image", minv=-87, maxv=199),
+    ],
+    "Task08": [
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        Clipd(keys="image", minv=0, maxv=230),
+    ],
+    "Task09": [
+        Spacingd(
+            keys=["image"],
+            pixdim=(1.0, 1.0, 1.0),
+            mode=("bilinear"),
+        ),
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        Clipd(keys="image", minv=-125, maxv=275),
+    ],
+    "Task10": [
+        CropForegroundd(keys=["image"], source_key="image", margin=1),
+        Clipd(keys="image", minv=-57, maxv=175),
+        NormalizeIntensityd(keys="image", nonzero=True),
+    ],
+}
 
 TASK_TO_VAL_TRANSFORM_MAP = {
     "Task01": [

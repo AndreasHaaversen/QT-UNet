@@ -22,7 +22,7 @@ class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
     """
     Convert labels to multi channels based on brats classes:
     label 2 is the peritumoral edema
-    label 4 is the GD-enhancing tumor
+    label 3 is the GD-enhancing tumor
     label 1 is the necrotic and non-enhancing tumor core
     The possible classes are TC (Tumor core), WT (Whole tumor)
     and ET (Enhancing tumor).
@@ -33,10 +33,10 @@ class ConvertToMultiChannelBasedOnBratsClassesd(MapTransform):
         d = dict(data)
         for key in self.keys:
             # label 4 is ET
-            ET = d[key] == 4
+            ET = d[key] == 3
             # merge label 4 and label 1 to construct TC
             TC = np.logical_or(ET, d[key] == 1)
-            # merge labels 1, 2 and 4 to construct WT
+            # merge labels 1, 2 and 3 to construct WT
             WT = np.logical_or(TC, d[key] == 2)
 
             d[key] = np.stack([ET, TC, WT], axis=0).astype(np.bool)
@@ -48,7 +48,7 @@ class ConvertToMultiChannelBasedOnBratsClassesFromMSDd(MapTransform):
     Convert labels to multi channels based on brats classes:
     label 1 is the peritumoral edema
     label 2 is the GD-enhancing tumor
-    label 3 is the necrotic and non-enhancing tumor core
+    label 4 is the necrotic and non-enhancing tumor core
     The possible classes are TC (Tumor core), WT (Whole tumor)
     and ET (Enhancing tumor).
 
