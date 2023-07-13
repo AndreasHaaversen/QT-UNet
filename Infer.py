@@ -44,6 +44,8 @@ def run_inference(
         dm.labels.remove("background")
 
     print("Checkpoint path: ", checkpoint_path)
+    # get model name from checkpoint path
+    model_name = checkpoint_path.split("/")[1]
 
     model_class = models[selected_model]
 
@@ -77,10 +79,12 @@ def run_inference(
             data_sample = batch_inverter(data_sample)[0]
 
         pred = data_sample["image"]
-        name = data_sample["name"]
+        name = data_sample["image_meta_dict"]["filename_or_obj"].split("/")[-1]
         if selected_experiment == "BraTS" or (
             selected_experiment == "MSD" and "Task01" in task
         ):
+            if selected_experiment == "MSD":
+                pred = torch.tensor(pred)
             ET = pred[0].bool()
             NET = torch.logical_and(pred[1], torch.logical_not(ET))
             ED = torch.logical_and(pred[2], torch.logical_not(pred[1]))
@@ -92,23 +96,29 @@ def run_inference(
         else:
             pred = np.argmax(pred, axis=0)
 
-        if selected_experiment == "BraTS":
+        if selected_experiment == "BraTS" or (
+            selected_experiment == "MSD" and "Task01" in task
+        ):
             pred = sitk.GetImageFromArray(
                 pred.cpu().numpy().astype(np.uint8).swapaxes(0, -1)
             )
         else:
             pred = sitk.GetImageFromArray(pred.astype(np.uint8).swapaxes(0, -1))
 
-        ref_path = data_sample["image_meta_dict"]["filename_or_obj"]
-        ref_img = sitk.ReadImage(ref_path)
-        pred.CopyInformation(ref_img)
+        if not selected_experiment == "MSD":
+            ref_path = data_sample["image_meta_dict"]["filename_or_obj"]
+            ref_img = sitk.ReadImage(ref_path)
+
+            pred.CopyInformation(ref_img)
 
         if selected_experiment in ["MSD", "BTCV", "BraTS"]:
             filename = f"{dir_name}/{name}"
             print(filename)
             sitk.WriteImage(pred, filename)
 
-    zip_name = f"{selected_model}-{selected_experiment}"
+    zip_name = f"{model_name}-{selected_experiment}"
+    if task is not None:
+        zip_name += f"-{task}"
     zip_path = os.path.join(dir_name, "..", zip_name)
     print(
         f"Inference complete, results are beeing zipped to {os.path.abspath(zip_path)}.zip"
